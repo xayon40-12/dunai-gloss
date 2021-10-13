@@ -7,9 +7,15 @@ module Dunai.Gloss
   ( module Dunai.Gloss.Internals,
     module Data.MonadicStreamFunction,
     module Graphics.Gloss,
+    module Graphics.Gloss.Interface.Pure.Game,
+    module Control.Monad.Trans.MSF,
+    module Control.Monad.Trans.Class,
   )
 where
 
+import Control.Monad.Trans.Class
+import Control.Monad.Trans.MSF
 import Data.MonadicStreamFunction
 import Dunai.Gloss.Internals
 import Graphics.Gloss
+import Graphics.Gloss.Interface.Pure.Game
