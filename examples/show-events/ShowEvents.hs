@@ -6,8 +6,8 @@ module Main where
 import Dunai.Gloss
 
 main :: IO ()
-main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 event update
+main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 Nothing event update draw
   where
-    event = proc e -> do
-      render -< Translate (-350) 0 $ Scale 0.1 0.1 $ Text (show e)
+    event = proc (_, e) -> returnA -< Just e
     update = unused
+    draw e = Translate (-350) 0 $ Scale 0.1 0.1 $ Text (show e)

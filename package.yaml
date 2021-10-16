@@ -1,5 +1,5 @@
 name:                dunai-gloss
-version:             0.1.1
+version:             1.0.0
 github:              "xayon40-12/dunai-gloss"
 license:             BSD3
 author:              "Nathan Touroux"
@@ -39,17 +39,17 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -c -A16M"'
+    - '"-with-rtsopts=-N -xn"'
     dependencies:
     - dunai-gloss
-  events:
+  show-events:
     main:                ShowEvents.hs
-    source-dirs:         examples/events
+    source-dirs:         examples/show-events
     ghc-options:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -c -A16M"'
+    - '"-with-rtsopts=-N -xn"'
     dependencies:
     - dunai-gloss
   follow-circle:
@@ -59,6 +59,6 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -c -A16M"'
+    - '"-with-rtsopts=-N -xn"'
     dependencies:
     - dunai-gloss

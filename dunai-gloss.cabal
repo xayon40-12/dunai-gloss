@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           dunai-gloss
-version:        0.1.1
+version:        1.0.0
 description:    A Gloss interface for dunai.
                 Please see the README on GitHub at <https://github.com/xayon40-12/dunai-gloss#readme>
 homepage:       https://github.com/xayon40-12/dunai-gloss#readme
@@ -45,23 +45,7 @@ executable basic-circle
       Paths_dunai_gloss
   hs-source-dirs:
       examples/basic-circle
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c -A16M"
-  build-depends:
-      base >=4.7 && <5
-    , dunai
-    , dunai-gloss
-    , gloss
-    , mtl
-    , transformers
-  default-language: Haskell2010
-
-executable events
-  main-is: ShowEvents.hs
-  other-modules:
-      Paths_dunai_gloss
-  hs-source-dirs:
-      examples/events
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c -A16M"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn"
   build-depends:
       base >=4.7 && <5
     , dunai
@@ -77,7 +61,23 @@ executable follow-circle
       Paths_dunai_gloss
   hs-source-dirs:
       examples/follow-circle
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c -A16M"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn"
+  build-depends:
+      base >=4.7 && <5
+    , dunai
+    , dunai-gloss
+    , gloss
+    , mtl
+    , transformers
+  default-language: Haskell2010
+
+executable show-events
+  main-is: ShowEvents.hs
+  other-modules:
+      Paths_dunai_gloss
+  hs-source-dirs:
+      examples/show-events
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn"
   build-depends:
       base >=4.7 && <5
     , dunai

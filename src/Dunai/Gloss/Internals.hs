@@ -1,4 +1,5 @@
 {-# LANGUAGE Arrows #-}
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE KindSignatures #-}
 
 -- | This module contains the elements needed to easily use dunai with Gloss.
@@ -11,15 +12,11 @@ module Dunai.Gloss.Internals
   ( -- * Types
     UpdateNetwork,
     EventNetwork,
-    Renderer,
-    ContextT,
 
     -- * Gloss wrappers
     playDunai,
-    playDunaiM,
 
     -- * Utils
-    render,
     unused,
   )
 where
@@ -32,32 +29,40 @@ import Data.Maybe (fromMaybe)
 import Data.MonadicStreamFunction (MSF, MSink, arrM, returnA)
 import Data.MonadicStreamFunction.InternalCore (unMSF)
 import Data.Monoid (Last (getLast))
+import Debug.Trace (trace)
 import Graphics.Gloss (Color, Display, Picture (Blank))
 import Graphics.Gloss.Interface.Pure.Game (Event, play)
 
 -- * Types
 
--- | Type to store only last rendered Picture.
-type Renderer = Last Picture
-
--- | Transformer used to make the rendered Picture accessible by gloss while permiting to use other monads for dunai.
-type ContextT (m :: Type -> Type) = WriterT Renderer m
-
 -- | Differentiat window events and update cases
 data GlossInteraction = WindowEvent Event | Update Float
 
+-- | Arrow type to describe stream funcion network
+type SF a b = MSF Identity a b
+
 -- | Arrow type to handle gloss events
-type EventNetwork (m :: Type -> Type) = MSink (ContextT m) Event
+type EventNetwork a = SF (a, Event) a
 
 -- | Arrow type to handle gloss updates
-type UpdateNetwork (m :: Type -> Type) = MSink (ContextT m) Float
+type UpdateNetwork a = SF (a, Float) a
 
 -- | Arrow type to describe the complete network
-type MSFNetwork (m :: Type -> Type) = MSink (ContextT m) GlossInteraction
+type SFNet a = SF (a, GlossInteraction) a
 
 -- * Gloss wrappers
 
--- | Gloss wrapper that takes two networks (MSF arrows) to handle updates and events coming from Gloss.
+-- | Execute the network for one step.
+step :: (i -> GlossInteraction) -> i -> (a, SFNet a) -> (a, SFNet a)
+step toGI i (w, sf) = runIdentity $ unMSF sf (w, toGI i)
+
+-- | Produce a unique network from an event network and an update network
+makeNetwork :: EventNetwork a -> UpdateNetwork a -> SFNet a
+makeNetwork event update = proc (w, gi) -> case gi of
+  WindowEvent e -> event -< (w, e)
+  Update dt -> update -< (w, dt)
+
+-- | Same as 'playDunai' to handle a transformer stack. An extra function is needed to extract the stored Picture from the transformer stack.
 playDunai ::
   -- | Disply mode.
   Display ->
@@ -65,55 +70,27 @@ playDunai ::
   Color ->
   -- | Number of steps to take for each second of real time.
   Int ->
+  -- | State
+  a ->
   -- | Network arrow to handle events.
-  EventNetwork Identity ->
+  EventNetwork a ->
   -- | Network arrow to handle updates
-  UpdateNetwork Identity ->
+  UpdateNetwork a ->
+  -- | Network arrow to draw the state
+  (a -> Picture) ->
   IO ()
-playDunai display color freq event update = playDunaiM display color freq event update runIdentity
-
--- | Execute the network for one step.
-step :: (Monad m) => GlossInteraction -> MSFNetwork m -> ContextT m (MSFNetwork m)
-step i msf = snd <$> unMSF msf i
-
--- | Produce a unique network from an event network and an update network
-makeNetwork :: (Monad m) => EventNetwork m -> UpdateNetwork m -> MSFNetwork m
-makeNetwork event update = proc gi -> case gi of
-  WindowEvent e -> event -< e
-  Update dt -> update -< dt
-
--- | Same as 'playDunai' to handle a transformer stack. An extra function is needed to extract the stored Picture from the transformer stack.
-playDunaiM ::
-  (Monad m) =>
-  -- | Disply mode.
-  Display ->
-  -- | Background color.
-  Color ->
-  -- | Number of steps to take for each second of real time.
-  Int ->
-  -- | Network arrow to handle events.
-  EventNetwork m ->
-  -- | Network arrow to handle updates
-  UpdateNetwork m ->
-  -- | Transformer stack extractor.
-  (m Renderer -> Renderer) ->
-  IO ()
-playDunaiM display color freq event update extract =
+playDunai display color freq world event update draw =
   play
     display
     color
     freq
-    (return (makeNetwork event update))
-    (fromMaybe Blank . getLast . extract . execWriterT)
-    (\event r -> r >>= step (WindowEvent event))
-    (\dt r -> r >>= step (Update dt))
+    (world, makeNetwork event update)
+    (draw . fst)
+    (step WindowEvent)
+    (step Update)
 
 -- * Utils
 
--- | Arrow combinator that takes a Picture as input and store it into the context.
-render :: (Monad m) => MSink (ContextT m) Picture
-render = arrM $ tell . pure
-
 -- | Arrow combinator to be substituted for unused events or updates handlers.
-unused :: (Monad m) => MSink (ContextT m) a
-unused = proc _ -> returnA -< ()
+unused :: SF (a, b) a
+unused = proc a -> returnA -< fst a
