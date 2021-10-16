@@ -1,6 +1,7 @@
 # Dunai Gloss  
 
 A gloss interface for Dunai where stream function (MSF Identity a b) are used to handle events and updates.  
+This is inspired by how 'reflex-gloss' and the Yampa code in 'frp-zoo' are using only on global reactive network.
 
 Monads are droped as they would never be fully executed because Gloss callback system would implies to bind the context indefinitly without an end (so without executing the monads).  
 
@@ -12,5 +13,3 @@ To execute an example either use stack with `stack run <example name>` or cabal 
 - basic-circle  
 - show-events  
 - follow-circle  
-
-The examples are so basic for now that they simply use Dunai as if it was classical function.

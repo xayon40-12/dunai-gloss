@@ -6,10 +6,10 @@ module Main where
 import Dunai.Gloss
 
 main :: IO ()
-main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 0 event update draw
+main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 network
   where
     c = Color red $ Circle 100
     v = 10
-    event = unused
-    update = proc (t, dt) -> returnA -< t + dt
-    draw t = translate (t * v) 0 c
+    network = proc (dt, _) -> do
+      t <- sumS -< dt
+      returnA -< translate (t * v) 0 c

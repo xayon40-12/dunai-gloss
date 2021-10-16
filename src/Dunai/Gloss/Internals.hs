@@ -1,68 +1,51 @@
 {-# LANGUAGE Arrows #-}
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE TupleSections #-}
 
 -- | This module contains the elements needed to easily use dunai with Gloss.
 --
--- Instead of callbacks used by gloss, dunai arrows (MSF) are used to handle events and updates.
---
--- You are expected to render the scene (with the 'render' combinator) somewhere inside the events and updates handlers.
--- The scene produced by 'render' will be presented to the screen the next time gloss would have called the rendering callback.
+-- Instead of callbacks used by gloss, a dunai steam function (MSF with Identity as Mando) is used to handle simultaneously time delta and possible events:
+-- - the event would be Nothing when Gloss would call update callback
+-- - the time delta would be 0 when Gloss would call the event callback
 module Dunai.Gloss.Internals
   ( -- * Types
-    UpdateNetwork,
-    EventNetwork,
+    SFNet,
 
     -- * Gloss wrappers
     playDunai,
 
     -- * Utils
-    unused,
+    quit,
   )
 where
 
 import Control.Monad.Identity (Identity (runIdentity))
-import Control.Monad.Trans.MSF (WriterT, execWriterT)
-import Control.Monad.Trans.MSF.Writer (tell)
-import Data.Kind (Type)
-import Data.Maybe (fromMaybe)
-import Data.MonadicStreamFunction (MSF, MSink, arrM, returnA)
+import Data.MonadicStreamFunction (MSF, returnA)
 import Data.MonadicStreamFunction.InternalCore (unMSF)
-import Data.Monoid (Last (getLast))
-import Debug.Trace (trace)
 import Graphics.Gloss (Color, Display, Picture (Blank))
 import Graphics.Gloss.Interface.Pure.Game (Event, play)
+import System.Exit (exitSuccess)
+import System.IO.Unsafe (unsafePerformIO)
 
 -- * Types
-
--- | Differentiat window events and update cases
-data GlossInteraction = WindowEvent Event | Update Float
 
 -- | Arrow type to describe stream funcion network
 type SF a b = MSF Identity a b
 
--- | Arrow type to handle gloss events
-type EventNetwork a = SF (a, Event) a
+-- | Stream function to describe a network that takes time delta (possibly 0) and a possible event as input, and produces a Picture as output
+type SFNet = SF (Float, Maybe Event) Picture
 
--- | Arrow type to handle gloss updates
-type UpdateNetwork a = SF (a, Float) a
-
--- | Arrow type to describe the complete network
-type SFNet a = SF (a, GlossInteraction) a
+-- | The state that cycle into gloss play function.
+type State = (Picture, SFNet)
 
 -- * Gloss wrappers
 
 -- | Execute the network for one step.
-step :: (i -> GlossInteraction) -> i -> (a, SFNet a) -> (a, SFNet a)
-step toGI i (w, sf) = runIdentity $ unMSF sf (w, toGI i)
+step :: (i -> (Float, Maybe Event)) -> i -> State -> State
+step toGI i (_, sf) = runIdentity $ unMSF sf (toGI i)
 
--- | Produce a unique network from an event network and an update network
-makeNetwork :: EventNetwork a -> UpdateNetwork a -> SFNet a
-makeNetwork event update = proc (w, gi) -> case gi of
-  WindowEvent e -> event -< (w, e)
-  Update dt -> update -< (w, dt)
-
--- | Same as 'playDunai' to handle a transformer stack. An extra function is needed to extract the stored Picture from the transformer stack.
+-- | Play wrapper that takes no state and only one network instead of the usual gloss callbacks.
 playDunai ::
   -- | Disply mode.
   Display ->
@@ -70,27 +53,20 @@ playDunai ::
   Color ->
   -- | Number of steps to take for each second of real time.
   Int ->
-  -- | State
-  a ->
-  -- | Network arrow to handle events.
-  EventNetwork a ->
-  -- | Network arrow to handle updates
-  UpdateNetwork a ->
-  -- | Network arrow to draw the state
-  (a -> Picture) ->
+  -- | Arrow network
+  SFNet ->
   IO ()
-playDunai display color freq world event update draw =
+playDunai display color freq network =
   play
     display
     color
     freq
-    (world, makeNetwork event update)
-    (draw . fst)
-    (step WindowEvent)
-    (step Update)
+    (Blank, network)
+    fst
+    (step ((0,) . Just))
+    (step (,Nothing))
 
 -- * Utils
 
--- | Arrow combinator to be substituted for unused events or updates handlers.
-unused :: SF (a, b) a
-unused = proc a -> returnA -< fst a
+{-# NOINLINE quit #-}
+quit = unsafePerformIO exitSuccess
