@@ -1,5 +1,5 @@
 name:                dunai-gloss
-version:             2.0.0
+version:             2.0.1
 github:              "xayon40-12/dunai-gloss"
 license:             BSD3
 author:              "Nathan Touroux"
@@ -27,6 +27,7 @@ dependencies:
 - mtl
 - transformers
 - gloss
+- containers
 
 library:
   source-dirs: src
@@ -45,6 +46,16 @@ executables:
   show-events:
     main:                ShowEvents.hs
     source-dirs:         examples/show-events
+    ghc-options:
+    - -threaded
+    - -O2
+    - -rtsopts
+    - '"-with-rtsopts=-N -xn"'
+    dependencies:
+    - dunai-gloss
+  keys-pressed:
+    main:                KeysPressed.hs
+    source-dirs:         examples/keys-pressed
     ghc-options:
     - -threaded
     - -O2

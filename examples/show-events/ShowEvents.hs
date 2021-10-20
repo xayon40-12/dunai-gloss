@@ -4,9 +4,7 @@
 module Main where
 
 import Control.Applicative (Alternative ((<|>)))
-import Data.Monoid (Last (..))
-import Debug.Trace
-import Dunai.Gloss hiding (trace)
+import Dunai.Gloss
 
 main :: IO ()
 main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 network
