@@ -27,3 +27,4 @@ To execute an example either use stack with `stack run <example name>` or cabal 
 - basic-circle  
 - show-events  
 - follow-circle  
+- keys-pressed  
