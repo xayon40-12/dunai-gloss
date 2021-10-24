@@ -7,7 +7,7 @@ import Data.Maybe (fromMaybe)
 import Dunai.Gloss
 
 main :: IO ()
-main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 network
+main = playDunai (InWindow "Follow Circles" (800, 600) (100, 100)) white 60 network
   where
     start = (0, 0)
     r = 30

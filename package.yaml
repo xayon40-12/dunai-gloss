@@ -1,5 +1,5 @@
 name:                dunai-gloss
-version:             2.0.1
+version:             2.0.2
 github:              "xayon40-12/dunai-gloss"
 license:             BSD3
 author:              "Nathan Touroux"
@@ -25,9 +25,7 @@ dependencies:
 - base >= 4.7 && < 5
 - dunai
 - mtl
-- transformers
 - gloss
-- containers
 
 library:
   source-dirs: src
@@ -63,6 +61,7 @@ executables:
     - '"-with-rtsopts=-N -xn"'
     dependencies:
     - dunai-gloss
+    - containers
   follow-circle:
     main:                FollowCircle.hs
     source-dirs:         examples/follow-circle
@@ -73,3 +72,14 @@ executables:
     - '"-with-rtsopts=-N -xn"'
     dependencies:
     - dunai-gloss
+  random:
+    main:                Pi.hs
+    source-dirs:         examples/random
+    ghc-options:
+    - -threaded
+    - -O2
+    - -rtsopts
+    - '"-with-rtsopts=-N -xn -A16M"'
+    dependencies:
+    - dunai-gloss
+    - random

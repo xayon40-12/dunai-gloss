@@ -6,7 +6,7 @@ module Main where
 import Dunai.Gloss
 
 main :: IO ()
-main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 network
+main = playDunai (InWindow "Basic circle" (800, 600) (100, 100)) white 60 network
   where
     c = Color red $ Circle 100
     v = 10

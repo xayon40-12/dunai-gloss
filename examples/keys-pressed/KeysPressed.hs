@@ -7,7 +7,7 @@ import Data.Set
 import Dunai.Gloss
 
 main :: IO ()
-main = playDunai (InWindow "Key pressed" (800, 600) (100, 100)) white 60 network
+main = playDunai (InWindow "Keys pressed" (800, 600) (100, 100)) white 60 network
   where
     network = proc (dt, e) -> do
       last <- accumulateWith store empty -< e

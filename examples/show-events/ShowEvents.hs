@@ -7,7 +7,7 @@ import Control.Applicative (Alternative ((<|>)))
 import Dunai.Gloss
 
 main :: IO ()
-main = playDunai (InWindow "MSF" (800, 600) (100, 100)) white 60 network
+main = playDunai (InWindow "Show events" (800, 600) (100, 100)) white 60 network
   where
     network = proc (dt, e) -> do
       last <- accumulateWith (<|>) Nothing -< e
