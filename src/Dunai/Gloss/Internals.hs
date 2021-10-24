@@ -17,12 +17,15 @@ module Dunai.Gloss.Internals
 
     -- * Utils
     quit,
+    repeatMSF,
+    repeatMStream,
   )
 where
 
 import Control.Monad.Identity (Identity (runIdentity))
+import Data.Bifunctor (second)
 import Data.MonadicStreamFunction (MSF, returnA)
-import Data.MonadicStreamFunction.InternalCore (unMSF)
+import Data.MonadicStreamFunction.InternalCore (MSF (..), unMSF)
 import Graphics.Gloss (Color, Display, Picture (Blank))
 import Graphics.Gloss.Interface.Pure.Game (Event, play)
 import System.Exit (exitSuccess)
@@ -68,5 +71,30 @@ playDunai display color freq network =
 
 -- * Utils
 
+-- | Quit the pregram in place by using 'unsafePerformIO'.
 {-# NOINLINE quit #-}
 quit = unsafePerformIO exitSuccess
+
+-- | Repeat n times an MSF at each call.
+-- 'n' must be greater or equals to 0.
+-- __Examples:__
+-- @
+-- repeatMSF 3 (arr (*2)) = arr (*2^3)
+-- @
+repeatMSF :: (Monad m) => Int -> MSF m a a -> MSF m a a
+repeatMSF n' msf' = MSF $ \a -> go n' (a, msf')
+  where
+    go 0 (a, msf) = return (a, repeatMSF n' msf)
+    go n (a, msf) = go (n -1) =<< unMSF msf a
+
+-- | Repeat n times an MStream at each call, disregarding itermediate output.
+-- 'n' must be greater or equals to 1.
+-- __Example:__
+-- @
+-- repeatMStream 3 count = count >>> arr (*3)
+-- @
+repeatMStream :: (Monad m) => Int -> MSF m () b -> MSF m () b
+repeatMStream n' msf' = MSF $ \_ -> go n' msf'
+  where
+    go 1 msf = second (repeatMStream n') <$> unMSF msf ()
+    go n msf = go (n -1) . snd =<< unMSF msf ()

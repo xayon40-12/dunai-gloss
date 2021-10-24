@@ -15,7 +15,7 @@ main = do
     circAt c = flip (uncurry translate) (Color c $ Circle 1)
     r = 100
     unitR = unfold $ uniformR (- r, r)
-    network (g0, g1) = proc _ -> do
+    net (g0, g1) = proc _ -> do
       i <- count -< ()
       x <- unitR g0 -< ()
       y <- unitR g1 -< ()
@@ -23,6 +23,9 @@ main = do
       sumpi <- sumS -< if isinside then 1 else 0
       poss <- mappendS -< if isinside then ([(x, y)], []) else ([], [(x, y)])
       let pi = 4 * sumpi / i :: Double
+      returnA -< (poss, pi)
+    network gg = proc _ -> do
+      (poss, pi) <- repeatMStream 100 $ net gg -< ()
       returnA -< draw poss pi
     draw (inside, outside) pi =
       Pictures $
