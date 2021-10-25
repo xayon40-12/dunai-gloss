@@ -17,6 +17,6 @@ main = playDunai (InWindow "Follow Circles" (800, 600) (100, 100)) white 60 netw
       returnA -< draw p t
     event e = case e of
       EventMotion p -> Just p
-      EventKey (Char 'q') Down _ _ -> quit
+      EventKey (Char 'q') Down _ _ -> unsafeQuit
       _ -> Nothing
     draw (x, y) t = Pictures [Translate (x + r * cos (t + i * 2 * pi / 3)) (y + r * sin (t + i * 2 * pi / 3)) $ Color red $ ThickCircle 0 10 | i <- [0 .. 2]]
