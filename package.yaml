@@ -1,5 +1,5 @@
 name:                dunai-gloss
-version:             3.0.0
+version:             3.0.1
 github:              "xayon40-12/dunai-gloss"
 license:             BSD3
 author:              "Nathan Touroux"
@@ -79,7 +79,8 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -xn -A16M"'
+    - '"-with-rtsopts=-N -xn -A64m"'
     dependencies:
     - dunai-gloss
     - random
+    - containers

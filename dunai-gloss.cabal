@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           dunai-gloss
-version:        3.0.0
+version:        3.0.1
 description:    A Gloss interface for dunai.
                 Please see the README on GitHub at <https://github.com/xayon40-12/dunai-gloss#readme>
 homepage:       https://github.com/xayon40-12/dunai-gloss#readme
@@ -90,9 +90,10 @@ executable random
       Paths_dunai_gloss
   hs-source-dirs:
       examples/random
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn -A16M"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn -A64m"
   build-depends:
       base >=4.7 && <5
+    , containers
     , dunai
     , dunai-gloss
     , gloss
