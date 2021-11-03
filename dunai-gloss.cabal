@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           dunai-gloss
-version:        3.0.1
+version:        3.0.2
 description:    A Gloss interface for dunai.
                 Please see the README on GitHub at <https://github.com/xayon40-12/dunai-gloss#readme>
 homepage:       https://github.com/xayon40-12/dunai-gloss#readme
@@ -44,7 +44,7 @@ executable basic-circle
       Paths_dunai_gloss
   hs-source-dirs:
       examples/basic-circle
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c"
   build-depends:
       base >=4.7 && <5
     , dunai
@@ -59,7 +59,7 @@ executable follow-circle
       Paths_dunai_gloss
   hs-source-dirs:
       examples/follow-circle
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c"
   build-depends:
       base >=4.7 && <5
     , dunai
@@ -74,7 +74,7 @@ executable keys-pressed
       Paths_dunai_gloss
   hs-source-dirs:
       examples/keys-pressed
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c"
   build-depends:
       base >=4.7 && <5
     , containers
@@ -90,7 +90,7 @@ executable random
       Paths_dunai_gloss
   hs-source-dirs:
       examples/random
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn -A64m"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c"
   build-depends:
       base >=4.7 && <5
     , containers
@@ -101,13 +101,30 @@ executable random
     , random
   default-language: Haskell2010
 
+executable random-io
+  main-is: Pi.hs
+  other-modules:
+      Paths_dunai_gloss
+  hs-source-dirs:
+      examples/random-io
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c"
+  build-depends:
+      base >=4.7 && <5
+    , dunai
+    , dunai-gloss
+    , gloss
+    , mtl
+    , random
+    , vector
+  default-language: Haskell2010
+
 executable show-events
   main-is: ShowEvents.hs
   other-modules:
       Paths_dunai_gloss
   hs-source-dirs:
       examples/show-events
-  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -xn"
+  ghc-options: -threaded -O2 -rtsopts "-with-rtsopts=-N -c"
   build-depends:
       base >=4.7 && <5
     , dunai

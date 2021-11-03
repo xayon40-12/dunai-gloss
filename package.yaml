@@ -1,5 +1,5 @@
 name:                dunai-gloss
-version:             3.0.1
+version:             3.0.2
 github:              "xayon40-12/dunai-gloss"
 license:             BSD3
 author:              "Nathan Touroux"
@@ -38,7 +38,7 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -xn"'
+    - '"-with-rtsopts=-N -c"'
     dependencies:
     - dunai-gloss
   show-events:
@@ -48,7 +48,7 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -xn"'
+    - '"-with-rtsopts=-N -c"'
     dependencies:
     - dunai-gloss
   keys-pressed:
@@ -58,7 +58,7 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -xn"'
+    - '"-with-rtsopts=-N -c"'
     dependencies:
     - dunai-gloss
     - containers
@@ -69,7 +69,7 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -xn"'
+    - '"-with-rtsopts=-N -c"'
     dependencies:
     - dunai-gloss
   random:
@@ -79,8 +79,20 @@ executables:
     - -threaded
     - -O2
     - -rtsopts
-    - '"-with-rtsopts=-N -xn -A64m"'
+    - '"-with-rtsopts=-N -c"'
     dependencies:
     - dunai-gloss
     - random
     - containers
+  random-io:
+    main:                Pi.hs
+    source-dirs:         examples/random-io
+    ghc-options:
+    - -threaded
+    - -O2
+    - -rtsopts
+    - '"-with-rtsopts=-N -c"'
+    dependencies:
+    - dunai-gloss
+    - random
+    - vector
