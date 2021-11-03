@@ -1,9 +1,12 @@
 # Dunai Gloss  
 
 A gloss interface for Dunai where stream function (`MSF Identity a b`) are used to handle events and updates.  
-This is inspired by how 'reflex-gloss' and the Yampa code in 'frp-zoo' are using only one global reactive network.
+This is inspired by how 'reflex-gloss' and the Yampa code in 'frp-zoo' are using only one global reactive network. The interface comes in two flavors:  
+- a pure one: `playDunai`
+- an IO one: `playDunaiIO`
 
-Monads are droped as they would never be fully executed because Gloss callback system would implies to bind the context indefinitly without an end (so without executing the monads).  
+Monads in general are droped as they would never be fully executed because Gloss callback system would implies to bind the context indefinitly without an end (so without executing the monads).  
+However the IO Monads can be used with `playDunaiIO`.
 
 ## How to use
 
@@ -28,3 +31,5 @@ To execute an example either use stack with `stack run <example name>` or cabal 
 - show-events  
 - follow-circle  
 - keys-pressed  
+- random
+- random-io
