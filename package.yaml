@@ -96,3 +96,14 @@ executables:
     - dunai-gloss
     - random
     - vector
+  quantum:
+    main:                Quantum.hs
+    source-dirs:         examples/quantum
+    ghc-options:
+    - -threaded
+    - -O2
+    - -rtsopts
+    - '"-with-rtsopts=-N -c"'
+    dependencies:
+    - dunai-gloss
+    - vector
